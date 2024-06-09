@@ -78,7 +78,7 @@ find_package(Boost 1.59.0 REQUIRED
     filesystem
     program_options
     regex
-    HINTS "C:\\Nyx\\Vendors"
+    HINTS CPP_REFLECTION_PARSER_BOOST_HINT
 )
 
 # add boost includes

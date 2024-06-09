@@ -10,7 +10,7 @@ endif ()
 set(LLVM_SEARCH_PATHS
     ${LLVM_ROOT}
     $ENV{LLVM_ROOT}
-    ${LLVM_ROOT_CUSTOM}
+    ${CPP_REFLECTION_LLVM_ROOT}
 )
 
 set(LIBCLANG_STATIC_LIBRARY_NAME
@@ -55,7 +55,7 @@ if (NOT LLVM_INCLUDE_DIRS OR
     (NOT LLVM_LIBRARY_DIR AND LIBCLANG_USE_STATIC_LIBRARY))
     message(SEND_ERROR 
         "Unable to find LLVM installation. "
-        "Make sure that \"LLVM_ROOT\" is set with the installation directory in either an environment variable or through the CMake GUI."
+        "Make sure that \"LLVM_ROOT\" or \"CPP_REFLECTION_LLVM_ROOT\" is set with the installation directory in either an environment variable or through the CMake GUI."
     )
 endif ()
 
