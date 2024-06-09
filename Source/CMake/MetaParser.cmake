@@ -138,8 +138,28 @@ function(meta_parser_build)
         endif ()
     endforeach ()
 
+    if (IS_ABSOLUTE ${BUILD_META_SOURCE_FILE})
+        set(BUILD_META_SOURCE_FILE_FINAL "${BUILD_META_SOURCE_FILE}")
+    else ()
+        set(BUILD_META_SOURCE_FILE_FINAL "${BUILD_META_SOURCE_ROOT}/${BUILD_META_SOURCE_FILE}")
+    endif ()
+
+    if (IS_ABSOLUTE ${BUILD_META_MODULE_HEADER})
+        set(BUILD_META_MODULE_HEADER_FINAL "${BUILD_META_MODULE_HEADER}")
+    else ()
+        set(BUILD_META_MODULE_HEADER_FINAL "${BUILD_META_SOURCE_ROOT}/${BUILD_META_MODULE_HEADER}")
+    endif ()
+
+    cmake_print_variables(BUILD_META_SOURCE_FILE)
+    cmake_print_variables(BUILD_META_SOURCE_FILE_FINAL)
+    cmake_print_variables(BUILD_META_MODULE_HEADER)
+    cmake_print_variables(BUILD_META_MODULE_HEADER_FINAL)
+    cmake_print_variables(BUILD_META_INCLUDES)
+    cmake_print_variables(RAW_INCLUDES)
+    cmake_print_variables(BUILD_META_DEFINES)
+
     # add the command that generates the header and source files
-#    cmake_print_variables(BUILD_META_GENERATED_FILES)
+    cmake_print_variables(BUILD_META_MODULE_HEADER_FINAL)
     add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E echo
         "Execute Meta Parser Build (${BUILD_META_PARSER_EXECUTABLE})"
@@ -148,8 +168,8 @@ function(meta_parser_build)
         COMMAND ${BUILD_META_PARSER_EXECUTABLE}
         --target-name "${BUILD_META_TARGET}"
         --source-root "${BUILD_META_SOURCE_ROOT}"
-        --in-source "${BUILD_META_SOURCE_ROOT}/${BUILD_META_SOURCE_FILE}"
-        --module-header "${BUILD_META_SOURCE_ROOT}/${BUILD_META_MODULE_HEADER}"
+        --in-source "${BUILD_META_SOURCE_FILE_FINAL}"
+        --module-header "${BUILD_META_MODULE_HEADER_FINAL}"
         --out-source "${BUILD_META_MODULE_SOURCE_FILE}"
         --out-dir "${BUILD_META_GENERATED_DIR}"
         ${PCH_SWITCH}
