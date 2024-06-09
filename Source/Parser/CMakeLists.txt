@@ -72,13 +72,14 @@ set(Boost_ALL_NO_LIB ON)
 # disable auto-linking
 add_definitions(-DBOOST_ALL_NO_LIB)
 
-find_package(Boost 1.59.0 REQUIRED 
+cmake_print_variables(CPP_REFLECTION_PARSER_BOOST_HINT)
+find_package(Boost 1.85.0 REQUIRED
     COMPONENTS 
     system
     filesystem
     program_options
     regex
-    HINTS CPP_REFLECTION_PARSER_BOOST_HINT
+    HINTS "${CPP_REFLECTION_PARSER_BOOST_HINT}\\lib\\cmake\\Boost-1.85.0"
 )
 
 # add boost includes
