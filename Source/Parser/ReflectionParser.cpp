@@ -177,8 +177,10 @@ void ReflectionParser::GenerateFiles(void)
             continue;
 
         auto outputFile = outputFileDirectory / relativeDir;
-        auto outputFileHeader = change_extension( outputFile, "Generated.h" );
-        auto outputFileSource = change_extension( outputFile, "Generated.cpp" );
+        auto outputFileHeaderCopy = outputFile;
+        auto outputFileSourceCopy = outputFile;
+        auto outputFileHeader = outputFileHeaderCopy.replace_extension( "Generated.h" );
+        auto outputFileSource = outputFileSourceCopy.replace_extension( "Generated.cpp" );
 
         // module file name
         file.second.name = boost::regex_replace(
@@ -199,8 +201,8 @@ void ReflectionParser::GenerateFiles(void)
         // if the generated file header/source doesn't exist, we need to regenerate
         if (m_options.forceRebuild || 
             !metaCacheFileExists || 
-            !exists( outputFileHeader ) ||
-            !exists( outputFileSource )
+            !boost::filesystem::exists( outputFileHeader ) ||
+            !boost::filesystem::exists( outputFileSource )
         )
         {
             generateModuleFile( outputFileHeader, outputFileSource, file.first, file.second );
@@ -209,8 +211,8 @@ void ReflectionParser::GenerateFiles(void)
         }
 
         auto lastSourceWrite = last_write_time( filePath );
-        auto lastGeneratedHeaderWrite = last_write_time( outputFileHeader );
-        auto lastGeneratedSourceWrite = last_write_time( outputFileSource );
+        auto lastGeneratedHeaderWrite = boost::filesystem::last_write_time( outputFileHeader );
+        auto lastGeneratedSourceWrite = boost::filesystem::last_write_time( outputFileSource );
 
         // if the generated file is older than the source file, we need to regenerate
         if (lastSourceWrite > lastGeneratedHeaderWrite || lastSourceWrite > lastGeneratedSourceWrite)
@@ -277,7 +279,7 @@ MustacheTemplate ReflectionParser::LoadTemplate(const std::string &name) const
 {
     auto path = fs::path( m_options.templateDirectory );
 
-    path.append( name );
+    path += name;
 
     try
     {
@@ -306,8 +308,9 @@ TemplateData::PartialType ReflectionParser::LoadTemplatePartial(
     const std::string &name
 ) const
 {
-    auto path = 
-        fs::path( m_options.templateDirectory ).append( name ).string( );
+    auto pathBoost = fs::path( m_options.templateDirectory );
+    pathBoost += name;
+    auto path = pathBoost.string( );
 
     try
     {
