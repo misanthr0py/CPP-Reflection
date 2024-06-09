@@ -10,6 +10,7 @@ endif ()
 set(LLVM_SEARCH_PATHS
     ${LLVM_ROOT}
     $ENV{LLVM_ROOT}
+    ${LLVM_ROOT_CUSTOM}
 )
 
 set(LIBCLANG_STATIC_LIBRARY_NAME
@@ -42,6 +43,11 @@ find_path(LLVM_BINARY_DIR
     PATHS ${LLVM_SEARCH_PATHS}
     PATH_SUFFIXES "bin" "lib"
 )
+
+#cmake_print_variables(LLVM_INCLUDE_DIRS)
+#cmake_print_variables(LLVM_BINARY_DIR)
+#cmake_print_variables(LLVM_LIBRARY_DIR)
+#cmake_print_variables(LIBCLANG_USE_STATIC_LIBRARY)
 
 # unable to find everything
 if (NOT LLVM_INCLUDE_DIRS OR

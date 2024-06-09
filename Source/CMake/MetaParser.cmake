@@ -139,7 +139,10 @@ function(meta_parser_build)
     endforeach ()
 
     # add the command that generates the header and source files
+#    cmake_print_variables(BUILD_META_GENERATED_FILES)
     add_custom_command(
+        COMMAND ${CMAKE_COMMAND} -E echo
+        "Execute Meta Parser Build (${BUILD_META_PARSER_EXECUTABLE})"
         OUTPUT ${BUILD_META_GENERATED_FILES}
         DEPENDS ${BUILD_META_HEADER_FILES}
         COMMAND ${BUILD_META_PARSER_EXECUTABLE}
@@ -152,5 +155,6 @@ function(meta_parser_build)
         ${PCH_SWITCH}
         --includes "${INCLUDES_FILE}"
         ${DEFINES_SWITCH}
+        --display-diagnostics true
     )
 endfunction ()

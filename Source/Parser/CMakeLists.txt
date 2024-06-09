@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.25)
 
-project(MetaParser CXX)
+project(MetaParser LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../CMake")
 
@@ -78,6 +78,7 @@ find_package(Boost 1.59.0 REQUIRED
     filesystem
     program_options
     regex
+    HINTS "C:\\Nyx\\Vendors"
 )
 
 # add boost includes
@@ -87,6 +88,7 @@ find_package(LLVM REQUIRED)
 
 # add LLVM includes
 include_directories(${LLVM_INCLUDE_DIRS})
+#cmake_print_variables(LLVM_INCLUDE_DIRS)
 
 # allow use of Common and Library directories
 include_directories(.)
@@ -101,18 +103,18 @@ add_executable(MetaParser ${HEADER_FILES} ${SOURCE_FILES})
 link_directories(${LLVM_LIBRARY_DIR})
 
 # statically link with Boost & LibClang
-target_link_libraries(MetaParser ${Boost_LIBRARIES} ${LIBCLANG_LIBRARY})
+target_link_libraries(MetaParser PUBLIC ${Boost_LIBRARIES} ${LIBCLANG_LIBRARY})
 
 set_precompiled_header(MetaParser Precompiled.h Precompiled.cpp)
 
 if (MSVC)
     # disable security warnings
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
+#    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
 
     target_compile_options(MetaParser
         PUBLIC
         # treat warnings as errors
-        /WX 
+#        /WX
         # multi process compilation
         /MP
     )
@@ -153,10 +155,14 @@ endif ()
 # copy resources on post build
 add_custom_command(TARGET MetaParser POST_BUILD
     # mustache templates directory
+    COMMAND ${CMAKE_COMMAND} -E echo
+    "Copy Mustache templates directory (${CMAKE_CURRENT_LIST_DIR}/../../Resources -> $<TARGET_FILE_DIR:MetaParser>)"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_LIST_DIR}/../../Resources"
         $<TARGET_FILE_DIR:MetaParser>
     # LibClang shared library
+    COMMAND ${CMAKE_COMMAND} -E echo
+    "Copy LibClang shared library (${LIBCLANG_SHARED_LIBRARY} -> $<TARGET_FILE_DIR:MetaParser>)"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${LIBCLANG_SHARED_LIBRARY}
         $<TARGET_FILE_DIR:MetaParser>
