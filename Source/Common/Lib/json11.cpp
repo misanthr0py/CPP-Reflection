@@ -153,9 +153,6 @@ protected:
     bool equals(const JsonValue * other) const override {
         return m_value == static_cast<const Value<tag, T> *>(other)->m_value;
     }
-    bool less(const JsonValue * other) const override {
-        return m_value < static_cast<const Value<tag, T> *>(other)->m_value;
-    }
 
     const T m_value;
     void dump(string &out) const override { json11::dump(m_value, out); }
@@ -181,12 +178,18 @@ public:
 
 class JsonBoolean final : public Value<Json::BOOL, bool> {
     bool bool_value() const override { return m_value; }
+    bool less(const JsonValue * other) const override {
+        return m_value < static_cast<const JsonBoolean *>(other)->m_value;
+    }
 public:
     explicit JsonBoolean(bool value) : Value(value) {}
 };
 
 class JsonString final : public Value<Json::STRING, string> {
     const string &string_value() const override { return m_value; }
+    bool less(const JsonValue * other) const override {
+        return m_value < static_cast<const JsonString *>(other)->m_value;
+    }
 public:
     explicit JsonString(const string &value) : Value(value) {}
     explicit JsonString(string &&value)      : Value(move(value)) {}
@@ -194,6 +197,9 @@ public:
 
 class JsonArray final : public Value<Json::ARRAY, Json::array> {
     const Json::array &array_items() const override { return m_value; }
+    bool less(const JsonValue * other) const override {
+        return m_value < static_cast<const JsonArray *>(other)->m_value;
+    }
     const Json & operator[](size_t i) const override;
 public:
     explicit JsonArray(const Json::array &value) : Value(value) {}
@@ -202,6 +208,9 @@ public:
 
 class JsonObject final : public Value<Json::OBJECT, Json::object> {
     const Json::object &object_items() const override { return m_value; }
+    bool less(const JsonValue * other) const override {
+        return m_value < static_cast<const JsonObject *>(other)->m_value;
+    }
     const Json & operator[](const string &key) const override;
 public:
     explicit JsonObject(const Json::object &value) : Value(value) {}
@@ -209,6 +218,9 @@ public:
 };
 
 class JsonNull final : public Value<Json::NUL, std::nullptr_t> {
+    bool less(const JsonValue * other) const override {
+        return false;
+    }
 public:
     JsonNull() : Value(nullptr) {}
 };
